@@ -1,0 +1,18 @@
+import React from "react";
+import styles from "./App.module.css";
+import { Heading, Button } from "evergreen-ui";
+
+function App() {
+  const handleClick = () => console.log("clicked");
+
+  return (
+    <div className={styles.root}>
+      <header className={styles.header}>
+        <Heading size={900}>Pokedex</Heading>
+      </header>
+      <Button onClick={handleClick}>Click me</Button>
+    </div>
+  );
+}
+
+export default App;
