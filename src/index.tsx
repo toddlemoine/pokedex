@@ -1,11 +1,20 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./components/App";
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './components/App';
+import { AppStoreProvider } from './hooks/use_app_store';
+import { AppStore } from './stores/app_store';
+import './index.css';
+import { Bootstrapper } from './components/bootstrapper';
+
+const store = new AppStore();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
+    <React.StrictMode>
+        <AppStoreProvider value={store}>
+            <Bootstrapper>
+                <App />
+            </Bootstrapper>
+        </AppStoreProvider>
+    </React.StrictMode>,
+    document.getElementById('root'),
 );
