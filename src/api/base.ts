@@ -6,7 +6,6 @@ export const getPokemonByName = async (name: string): Promise<IPokemon> => {
         const resp = await PokeAPI.Pokemon.resolve(name);
         return resp;
     } catch (err) {
-        console.log(err);
         // If we get 'invalid-json' back, assume it's a "Not found" response.
         if (err.type === 'invalid-json') {
             throw new ApiError('Pokemon not found', err.status);
