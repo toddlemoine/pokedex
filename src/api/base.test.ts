@@ -25,7 +25,6 @@ describe('Pokedex api', () => {
                 caughtError = error;
             } finally {
                 expect(caughtError).toBeDefined();
-                expect(caughtError.message).toBe('Pokemon not found');
                 teardown();
             }
         });
