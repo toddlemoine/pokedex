@@ -1,2 +1,3 @@
-export * from './getAllPokemonNames';
-export * from './base';
+export * from './listAllPokemon';
+export * from './getPokemon';
+export * from './cachedPokemon';

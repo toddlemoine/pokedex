@@ -13,7 +13,6 @@ const App = observer(() => {
             <header className={styles.header}>
                 <Heading size={900}>Pokedex</Heading>
             </header>
-            <p>App is ready? {store.ready.toString()}</p>
             <Button onClick={handleClick}>Click me</Button>
         </div>
     );

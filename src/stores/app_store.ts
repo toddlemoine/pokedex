@@ -1,6 +1,8 @@
-import { action, makeObservable, observable, computed, runInAction } from 'mobx';
-import { INamedApiResource, IPokemon } from 'pokeapi-typescript';
-import { getAllPokemonNames } from '../api/getAllPokemonNames';
+import { setCachedPokemon } from './../api/cachedPokemon';
+import { getPokemon, getCachedPokemon } from '../api';
+import { toJS, action, makeObservable, observable, computed, runInAction } from 'mobx';
+import { IPokemon } from 'pokeapi-typescript';
+import { listAllPokemon } from '../api/listAllPokemon';
 
 enum AppStoreState {
     INITIAL,
@@ -11,35 +13,65 @@ enum AppStoreState {
 
 export class AppStore {
     public state: AppStoreState = AppStoreState.INITIAL;
-    public pokemon: INamedApiResource<IPokemon>[] = [];
+    public pokemon: IPokemon[] = [];
 
     constructor() {
         makeObservable(this, {
             state: observable,
-            pending: computed,
+            loading: computed,
             ready: computed,
             error: computed,
             pokemon: observable,
-            fetchAllPokemonNames: action,
+            fetchAllPokemon: action,
+            initializePokemon: action,
+            total: computed,
         });
+
+        this.initializePokemon();
     }
 
-    public async fetchAllPokemonNames() {
-        this.state = AppStoreState.LOADING;
+    public async initializePokemon() {
         try {
-            const resp = await getAllPokemonNames();
-            runInAction(() => {
-                this.pokemon = resp.results;
-                this.state = AppStoreState.FULFILLED;
-            });
+            const cachedPokemon = await getCachedPokemon();
+            if (cachedPokemon !== null) {
+                runInAction(() => {
+                    this.pokemon = cachedPokemon;
+                    this.state = AppStoreState.FULFILLED;
+                });
+            } else {
+                this.fetchAllPokemon();
+            }
+        } catch (_err) {
+            this.fetchAllPokemon();
+        }
+    }
+
+    public async fetchAllPokemon() {
+        this.state = AppStoreState.LOADING;
+
+        try {
+            const { results } = await listAllPokemon();
+            let counter = results.length;
+            while (counter--) {
+                const resource = results[counter];
+                const pokemon = await getPokemon(resource);
+                runInAction(() => {
+                    this.pokemon = this.pokemon.concat(pokemon);
+                });
+            }
         } catch (err) {
             runInAction(() => {
                 this.state = AppStoreState.ERROR;
             });
+        } finally {
+            runInAction(() => {
+                this.state = AppStoreState.FULFILLED;
+                setCachedPokemon(toJS(this.pokemon));
+            });
         }
     }
 
-    get pending() {
+    get loading() {
         return this.state === AppStoreState.LOADING;
     }
 
@@ -49,5 +81,9 @@ export class AppStore {
 
     get error() {
         return this.state === AppStoreState.ERROR;
+    }
+
+    get total() {
+        return this.pokemon.length;
     }
 }
