@@ -1,6 +1,6 @@
 import { setCachedPokemon } from './../api/cachedPokemon';
 import { getPokemon, getCachedPokemon } from '../api';
-import { toJS, action, makeObservable, observable, computed, runInAction } from 'mobx';
+import { toJS, action, makeObservable, observable, computed, runInAction, autorun } from 'mobx';
 import { IPokemon } from 'pokeapi-typescript';
 import { listAllPokemon } from '../api/listAllPokemon';
 
@@ -23,7 +23,7 @@ export class AppStore {
     public pokemon: IPokemon[] = [];
     public query: Query = {};
 
-    constructor() {
+    constructor(initialQuery?: Query) {
         makeObservable(this, {
             state: observable,
             loading: computed,
@@ -33,10 +33,23 @@ export class AppStore {
             fetchAllPokemon: action,
             initializePokemon: action,
             total: computed,
+            filterByName: action,
+            query: observable,
             queryResults: computed,
         });
 
+        if (initialQuery) {
+            this.query = initialQuery;
+        }
         this.initializePokemon();
+        this.keepLocationBarInSyncWithAppState();
+    }
+
+    private keepLocationBarInSyncWithAppState() {
+        autorun(() => {
+            const params = new URLSearchParams(this.query as Record<string, string>);
+            window.history.replaceState(null, '', '?' + params);
+        });
     }
 
     public async initializePokemon() {
@@ -99,6 +112,17 @@ export class AppStore {
     }
 
     public get queryResults(): IPokemon[] {
-        return [];
+        let results = this.pokemon;
+
+        if (this.query.name) {
+            const { name } = this.query;
+            results = results.filter(p => p.name.includes(name));
+        }
+
+        return results;
+    }
+
+    public filterByName(name: string) {
+        this.query.name = name;
     }
 }

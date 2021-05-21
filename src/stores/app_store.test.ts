@@ -16,6 +16,11 @@ describe('AppStore', () => {
     };
 
     describe('initialization', () => {
+        it('accepts an initial set of query params', () => {
+            const store = new AppStore({ name: 'Apples' });
+            expect(store.query.name).toBe('Apples');
+        });
+
         it('loads pokemon from localstorage cache', async () => {
             const teardown = givenCachedPokemonExist();
             const store = new AppStore();
