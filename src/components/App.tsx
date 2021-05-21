@@ -1,19 +1,22 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import styles from './App.module.css';
-import { Heading, Button } from 'evergreen-ui';
+import { Heading } from 'evergreen-ui';
 import { useAppStore } from '../hooks/use_app_store';
+import { PokeGrid } from './poke_grid';
 
 const App = observer(() => {
     const store = useAppStore();
-    const handleClick = () => console.log('clicked');
 
     return (
         <div className={styles.root}>
-            <header className={styles.header}>
+            <aside className={styles.filterpane}>
                 <Heading size={900}>Pokedex</Heading>
-            </header>
-            <Button onClick={handleClick}>Click me</Button>
+                Sidebar
+            </aside>
+            <div className={styles.contentpane}>
+                <PokeGrid items={store.pokemon} />
+            </div>
         </div>
     );
 });

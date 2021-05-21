@@ -1,17 +1,12 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import App from './App';
 import { AppStoreProvider } from '../hooks/use_app_store';
 import { AppStore } from '../stores/app_store';
+import { renderWithProvider } from '../../mocks/utils';
 
 describe('App', () => {
-    const renderWithStore = (component, store = new AppStore()) => {
-        const Providers = ({ children }) => {
-            return <AppStoreProvider value={store}>{children}</AppStoreProvider>;
-        };
-
-        return render(component, { wrapper: Providers });
-    };
+    const renderWithStore = renderWithProvider(AppStoreProvider, new AppStore());
 
     it('has a semantic heading', () => {
         renderWithStore(<App />);

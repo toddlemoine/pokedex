@@ -11,9 +11,17 @@ enum AppStoreState {
     ERROR,
 }
 
+interface Query {
+    name?: string;
+    species?: string;
+    types?: string;
+    sort?: string;
+}
+
 export class AppStore {
     public state: AppStoreState = AppStoreState.INITIAL;
     public pokemon: IPokemon[] = [];
+    public query: Query = {};
 
     constructor() {
         makeObservable(this, {
@@ -25,6 +33,7 @@ export class AppStore {
             fetchAllPokemon: action,
             initializePokemon: action,
             total: computed,
+            queryResults: computed,
         });
 
         this.initializePokemon();
@@ -64,10 +73,12 @@ export class AppStore {
                 this.state = AppStoreState.ERROR;
             });
         } finally {
-            runInAction(() => {
-                this.state = AppStoreState.FULFILLED;
-                setCachedPokemon(toJS(this.pokemon));
-            });
+            if (!this.error) {
+                runInAction(() => {
+                    this.state = AppStoreState.FULFILLED;
+                    setCachedPokemon(toJS(this.pokemon));
+                });
+            }
         }
     }
 
@@ -85,5 +96,9 @@ export class AppStore {
 
     get total() {
         return this.pokemon.length;
+    }
+
+    public get queryResults(): IPokemon[] {
+        return [];
     }
 }

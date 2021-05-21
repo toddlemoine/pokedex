@@ -5,5 +5,5 @@ interface AppConfig {
 
 export const config: AppConfig = {
     pokeapiHostName: process.env.REACT_APP_POKEAPI_HOST_NAME ?? '',
-    pokedexSize: 4,
+    pokedexSize: 10,
 };

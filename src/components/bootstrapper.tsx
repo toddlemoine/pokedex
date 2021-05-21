@@ -1,14 +1,19 @@
-import { observer } from 'mobx-react';
 import React from 'react';
+import { observer } from 'mobx-react';
 import { useAppStore } from '../hooks/use_app_store';
 import { last } from '../utils';
+import { LoadingDialog } from './loading_dialog';
 
 export const Bootstrapper: React.FC = observer(({ children }) => {
     const store = useAppStore();
 
     if (store.loading) {
-        return <div>Loading Pokemon ({last(store.pokemon)?.name})</div>;
+        return <LoadingDialog text={`Adding ${last(store.pokemon)?.name}`} />;
     }
 
-    return store.ready ? <>{children}</> : <></>;
+    if (store.ready) {
+        return <>{children}</>;
+    }
+
+    return <></>;
 });
