@@ -10,3 +10,4 @@ export interface Query {
 
 export type PokemonType = Pick<IType, "name">;
 export type PokemonSpecies = Pick<IPokemonSpecies, "name">;
+export type SortDirection = "asc" | "desc";

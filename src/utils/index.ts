@@ -1,5 +1,6 @@
 import { IPokemon } from "pokeapi-typescript";
-import { Query, PokemonType, PokemonSpecies } from "../types";
+import { SortDirection, Query, PokemonType, PokemonSpecies } from "../types";
+
 export const last = <T>(coll: T[]): T | null => {
   return coll[coll.length - 1];
 };
@@ -19,6 +20,10 @@ interface PokemonStatsMap {
     base: number;
     effort: number;
   };
+}
+
+interface FieldAccessors {
+  [key: string]: (p: IPokemon) => string | number;
 }
 
 export const getBestArtworkUrl = (
@@ -63,4 +68,39 @@ export const statsToMap = (pokemon: IPokemon): PokemonStatsMap => {
     acc[key] = { base: stat.base_stat, effort: stat.effort };
     return acc;
   }, {} as PokemonStatsMap);
+};
+
+export const fieldAccessors: FieldAccessors = {
+  name: (p: IPokemon): string => p.name,
+  type: (p: IPokemon): string => p.types[0].type.name,
+  species: (p: IPokemon): string => p.name,
+  exp: (p: IPokemon): number => p.base_experience,
+  hp: (p: IPokemon): number =>
+    p.stats.find((s) => s.stat.name === "hp")?.base_stat ?? 0,
+  height: (p: IPokemon): number => p.height,
+  weight: (p: IPokemon): number => p.weight,
+  ability_count: (p: IPokemon): number => p.abilities.length,
+};
+
+export const flipDirection = (direction: SortDirection): SortDirection => {
+  return direction === "asc" ? "desc" : "asc";
+};
+
+export const fieldNames = (key: string): string => {
+  const fields: { [key: string]: string } = {
+    name: "Name",
+    type: "Type",
+    species: "Species",
+    hp: "Hit Points",
+    exp: "Base experience",
+    height: "Height",
+    weight: "Weight",
+    ability_count: "Ability Count",
+  };
+
+  return fields[key] ?? "Unknown";
+};
+
+export const titleCase = (str: string): string => {
+  return str[0].toUpperCase() + str.split("").slice(1).join("");
 };

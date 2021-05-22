@@ -1,7 +1,7 @@
 import { Badge, Tablist, Tab, Card, Pane, Heading } from "evergreen-ui";
 import { IPokemon } from "pokeapi-typescript";
 import React, { useState } from "react";
-import { statsToMap } from "../utils";
+import { statsToMap, titleCase } from "../utils";
 import { AbilitiesList } from "./abilities_list";
 import { MovesList } from "./moves_list";
 import { PokePic } from "./poke_pic";
@@ -27,7 +27,7 @@ export const PokemonDetail: React.FC<{ pokemon: IPokemon }> = ({ pokemon }) => {
     <article>
       <Pane>
         <Pane padding={16} borderBottom="muted">
-          <Heading size={800}>{p.name}</Heading>
+          <Heading size={800}>{titleCase(p.name)}</Heading>
           <Pane flexDirection="row">
             <CoreAttribute name="Height" value={p.height} />
             <CoreAttribute name="Weight" value={p.weight} />

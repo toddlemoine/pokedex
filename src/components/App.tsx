@@ -9,12 +9,16 @@ import {
   SelectMenuItem,
   TextInputField,
   SideSheet,
+  Pane,
+  Paragraph,
 } from "evergreen-ui";
 import { useAppStore } from "../hooks/use_app_store";
 import { PokeGrid } from "./poke_grid";
 import { TypesFilterGroup } from "./types_filter_group";
 import { IPokemon } from "pokeapi-typescript";
 import { PokemonDetail } from "./pokemon_detail";
+import { SortMenu } from "./sort_menu";
+import { fieldNames } from "../utils";
 
 const App = observer(() => {
   const store = useAppStore();
@@ -61,6 +65,11 @@ const App = observer(() => {
     store.selectPokemon(null);
   };
 
+  const summaryText =
+    store.queryResults.length === 0
+      ? "No Pokemon found"
+      : `${store.queryResults.length} Pokemon found`;
+
   return (
     <>
       <div className={styles.root}>
@@ -96,6 +105,18 @@ const App = observer(() => {
           </form>
         </aside>
         <div className={styles.contentpane}>
+          <Pane display="flex" flexDirection="row">
+            <Pane flex={1}>
+              <Heading>{summaryText}</Heading>
+              <Paragraph>
+                Sorted by {fieldNames(store.sortField)},{" "}
+                {store.sortedAscending ? "Ascending" : "Descending"}
+              </Paragraph>
+            </Pane>
+            <Pane>
+              <SortMenu onSelect={(field) => store.sortBy(field)} />
+            </Pane>
+          </Pane>
           <PokeGrid
             items={store.queryResults}
             onItemClick={handleGridItemClick}

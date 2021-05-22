@@ -11,12 +11,14 @@ import {
 } from "mobx";
 import { IPokemon } from "pokeapi-typescript";
 import { listAllPokemon } from "../api/listAllPokemon";
-import { Query, PokemonType, PokemonSpecies } from "../types";
+import { SortDirection, Query, PokemonType, PokemonSpecies } from "../types";
 import {
   searchParamsToQuery,
   parseUniqueTypes,
   parseUniqueSpecies,
   parseTypes,
+  fieldAccessors,
+  flipDirection,
 } from "../utils";
 
 enum AppStoreState {
@@ -54,6 +56,8 @@ export class AppStore {
       activeSpecies: computed,
       activePokemon: observable,
       selectPokemon: action,
+      sortField: computed,
+      sortedAscending: computed,
     });
 
     this.initializePokemon();
@@ -165,9 +169,18 @@ export class AppStore {
       });
     }
 
-    return results;
+    return this.sortResults(results);
   }
 
+  public get sortField(): string {
+    const [field = "name", _dir] = this.query.sort.split(".");
+    return field;
+  }
+
+  public get sortedAscending(): boolean {
+    const [_field, dir] = this.query.sort.split(".");
+    return dir === "asc";
+  }
   public filterByName(name: string) {
     this.query.name = name;
   }
@@ -182,5 +195,28 @@ export class AppStore {
 
   public selectPokemon(pokemon: IPokemon | null) {
     this.activePokemon = pokemon;
+  }
+
+  public sortBy(field: string) {
+    const [currentField, currentDirection] = this.query.sort.split(".");
+    const dir: SortDirection =
+      field === currentField
+        ? flipDirection(currentDirection as SortDirection)
+        : "asc";
+    this.query.sort = [field, dir].join(".");
+  }
+
+  private sortResults(results: IPokemon[]): IPokemon[] {
+    const sortParams = this.query.sort ?? "name.asc";
+    const [field, direction] = sortParams.split(".");
+    const fieldAccessor = fieldAccessors[field] ?? fieldAccessors.name;
+    const sorted = results.slice().sort((a: IPokemon, b: IPokemon) => {
+      const aVal = fieldAccessor(a);
+      const bVal = fieldAccessor(b);
+      if (aVal < bVal) return -1;
+      if (aVal > bVal) return 1;
+      return 0;
+    });
+    return direction === "desc" ? sorted.reverse() : sorted;
   }
 }
