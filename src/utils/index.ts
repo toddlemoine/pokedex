@@ -1,5 +1,5 @@
 import { IPokemon } from "pokeapi-typescript";
-import { PokemonType } from "../types";
+import { Query, PokemonType } from "../types";
 export const last = <T>(coll: T[]): T | null => {
   return coll[coll.length - 1];
 };
@@ -32,4 +32,14 @@ export const parseUniqueTypes = (pokemon: IPokemon[]): PokemonType[] => {
 
 export const parseTypes = (pokemon: IPokemon): string[] => {
   return pokemon.types.map((t) => t.type.name);
+};
+
+export const searchParamsToQuery = (params: URLSearchParams): Query => {
+  const validKeys = ["name", "sort", "types", "species"];
+  return Array.from(params.entries()).reduce((query, [key, val]) => {
+    if (validKeys.includes(key)) {
+      query[key] = val;
+    }
+    return query;
+  }, {} as Query);
 };

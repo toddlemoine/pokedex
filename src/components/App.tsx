@@ -14,7 +14,6 @@ const App = observer(() => {
   };
 
   const handleTypesChange = (checkedTypes: string[]) => {
-    console.log("checked", checkedTypes);
     store.filterByType(checkedTypes);
   };
 
@@ -24,6 +23,7 @@ const App = observer(() => {
         <Heading size={900}>Pokedex</Heading>
         <form>
           <TextInputField
+            value={store.query.name}
             onChange={handleNameInputChange}
             label="Character name"
           />

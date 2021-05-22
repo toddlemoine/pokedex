@@ -11,8 +11,8 @@ import {
 } from "mobx";
 import { IPokemon } from "pokeapi-typescript";
 import { listAllPokemon } from "../api/listAllPokemon";
-import { PokemonType } from "../types";
-import { parseUniqueTypes, parseTypes } from "../utils";
+import { Query, PokemonType } from "../types";
+import { searchParamsToQuery, parseUniqueTypes, parseTypes } from "../utils";
 
 enum AppStoreState {
   INITIAL,
@@ -21,20 +21,13 @@ enum AppStoreState {
   ERROR,
 }
 
-interface Query {
-  name?: string;
-  species?: string;
-  types?: string;
-  sort?: string;
-}
-
 export class AppStore {
   public state: AppStoreState = AppStoreState.INITIAL;
   public pokemon: IPokemon[] = [];
   public pokemonTypes: PokemonType[] = [];
-  public query: Query = {};
+  public query: Query = { name: "", species: "", types: "", sort: "" };
 
-  constructor(initialQuery?: Query) {
+  constructor(searchParams?: URLSearchParams) {
     makeObservable(this, {
       state: observable,
       loading: computed,
@@ -51,8 +44,8 @@ export class AppStore {
       activeTypes: computed,
     });
 
-    if (initialQuery) {
-      this.query = initialQuery;
+    if (searchParams) {
+      this.query = searchParamsToQuery(searchParams);
     }
     this.initializePokemon();
     this.keepLocationBarInSyncWithAppState();
@@ -126,9 +119,7 @@ export class AppStore {
   }
 
   get activeTypes() {
-    const types = this.query.types?.split(",") ?? [];
-    console.log("active types", types);
-    return types;
+    return this.query.types?.split(",") ?? [];
   }
 
   public get queryResults(): IPokemon[] {

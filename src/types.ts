@@ -1,3 +1,11 @@
-import { IType } from 'pokeapi-typescript';
+import { IType } from "pokeapi-typescript";
 
-export type PokemonType = Pick<IType, 'name'>;
+export interface Query {
+  [key: string]: string;
+  name: string;
+  species: string;
+  types: string;
+  sort: string;
+}
+
+export type PokemonType = Pick<IType, "name">;
