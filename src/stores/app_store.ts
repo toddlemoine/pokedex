@@ -32,6 +32,7 @@ export class AppStore {
   public pokemonTypes: PokemonType[] = [];
   public pokemonSpecies: PokemonSpecies[] = [];
   public query: Query = { name: "", species: "", types: "", sort: "" };
+  public activePokemon: IPokemon | null = null;
 
   constructor(searchParams: URLSearchParams = new URLSearchParams()) {
     this.query = searchParamsToQuery(searchParams);
@@ -51,6 +52,8 @@ export class AppStore {
       queryResults: computed,
       activeTypes: computed,
       activeSpecies: computed,
+      activePokemon: observable,
+      selectPokemon: action,
     });
 
     this.initializePokemon();
@@ -128,11 +131,13 @@ export class AppStore {
   }
 
   get activeTypes() {
-    return this.query.types?.split(",") ?? [];
+    const hasTypes = this.query.types?.length > 0;
+    return hasTypes ? this.query.types.split(",") : [];
   }
 
   get activeSpecies() {
-    return this.query.species?.split(",") ?? [];
+    const hasSpecies = this.query.species?.length > 0;
+    return hasSpecies ? this.query.species.split(",") : [];
   }
 
   public get queryResults(): IPokemon[] {
@@ -173,5 +178,9 @@ export class AppStore {
 
   public filterBySpecies(species: string[]) {
     this.query.species = species.toString();
+  }
+
+  public selectPokemon(pokemon: IPokemon | null) {
+    this.activePokemon = pokemon;
   }
 }

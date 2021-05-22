@@ -14,6 +14,13 @@ interface PokemonOtherSprites {
   };
 }
 
+interface PokemonStatsMap {
+  [name: string]: {
+    base: number;
+    effort: number;
+  };
+}
+
 export const getBestArtworkUrl = (
   pokemon: IPokemon & PokemonOtherSprites
 ): string => {
@@ -48,4 +55,12 @@ export const searchParamsToQuery = (params: URLSearchParams): Query => {
     }
     return query;
   }, {} as Query);
+};
+
+export const statsToMap = (pokemon: IPokemon): PokemonStatsMap => {
+  return pokemon.stats.reduce((acc, stat) => {
+    const key: string = stat.stat.name;
+    acc[key] = { base: stat.base_stat, effort: stat.effort };
+    return acc;
+  }, {} as PokemonStatsMap);
 };

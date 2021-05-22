@@ -8,10 +8,13 @@ import {
   SelectMenu,
   SelectMenuItem,
   TextInputField,
+  SideSheet,
 } from "evergreen-ui";
 import { useAppStore } from "../hooks/use_app_store";
 import { PokeGrid } from "./poke_grid";
 import { TypesFilterGroup } from "./types_filter_group";
+import { IPokemon } from "pokeapi-typescript";
+import { PokemonDetail } from "./pokemon_detail";
 
 const App = observer(() => {
   const store = useAppStore();
@@ -47,40 +50,64 @@ const App = observer(() => {
       ? store.activeSpecies.join(", ")
       : "Select...";
 
-  return (
-    <div className={styles.root}>
-      <aside className={styles.filterpane}>
-        <Heading size={900}>Pokedex</Heading>
-        <form onSubmit={cancelSubmit}>
-          <TextInputField
-            value={store.query.name}
-            onChange={handleNameInputChange}
-            label="Character name"
-          />
+  const showPokemon = store.activePokemon !== undefined;
+  const activePokemon = store.activePokemon;
 
-          <FormField label="Species">
-            <SelectMenu
-              isMultiSelect={true}
-              title="Species"
-              options={options}
-              selected={store.activeSpecies}
-              onSelect={handleSpeciesSelect}
-              onDeselect={handleSpeciesDeselect}
-            >
-              <Button>{speciesButtonText}</Button>
-            </SelectMenu>
-          </FormField>
-          <TypesFilterGroup
-            options={store.pokemonTypes}
-            onChange={handleTypesChange}
-            checked={store.activeTypes}
+  const handleGridItemClick = (item: IPokemon) => {
+    store.selectPokemon(item);
+  };
+
+  const handleSheetClose = () => {
+    store.selectPokemon(null);
+  };
+
+  return (
+    <>
+      <div className={styles.root}>
+        <aside className={styles.filterpane}>
+          <Heading size={900}>Pokedex</Heading>
+          <form
+            aria-aria-describedby="Filter the Pokedex by name, type, or species"
+            onSubmit={cancelSubmit}
+          >
+            <TextInputField
+              value={store.query.name}
+              onChange={handleNameInputChange}
+              label="Character name"
+            />
+
+            <FormField label="Species" marginBottom={16}>
+              <SelectMenu
+                isMultiSelect={true}
+                title="Species"
+                options={options}
+                selected={store.activeSpecies}
+                onSelect={handleSpeciesSelect}
+                onDeselect={handleSpeciesDeselect}
+              >
+                <Button>{speciesButtonText}</Button>
+              </SelectMenu>
+            </FormField>
+            <TypesFilterGroup
+              options={store.pokemonTypes}
+              onChange={handleTypesChange}
+              checked={store.activeTypes}
+            />
+          </form>
+        </aside>
+        <div className={styles.contentpane}>
+          <PokeGrid
+            items={store.queryResults}
+            onItemClick={handleGridItemClick}
           />
-        </form>
-      </aside>
-      <div className={styles.contentpane}>
-        <PokeGrid items={store.queryResults} />
+        </div>
       </div>
-    </div>
+      {activePokemon && (
+        <SideSheet isShown={showPokemon} onCloseComplete={handleSheetClose}>
+          <PokemonDetail pokemon={activePokemon} />
+        </SideSheet>
+      )}
+    </>
   );
 });
 
