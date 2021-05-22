@@ -26,7 +26,7 @@ describe("PokeCard", () => {
 
   it("has an image of the pokemon with alt text", () => {
     render(<PokeCard pokemon={mockPokemon} />);
-    const el = screen.getByAltText("Ditto");
+    const el = screen.getByAltText("Ditto artwork");
     expect(el).toBeInTheDocument();
   });
 });

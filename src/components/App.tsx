@@ -67,7 +67,7 @@ const App = observer(() => {
         <aside className={styles.filterpane}>
           <Heading size={900}>Pokedex</Heading>
           <form
-            aria-aria-describedby="Filter the Pokedex by name, type, or species"
+            aria-describedby="Filter the Pokedex by name, type, or species"
             onSubmit={cancelSubmit}
           >
             <TextInputField
