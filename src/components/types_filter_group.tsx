@@ -23,7 +23,7 @@ export const TypesFilterGroup: React.FC<Props> = observer(
     };
 
     return (
-      <FormField>
+      <FormField label="Types">
         {store.pokemonTypes.map((t) => (
           <Checkbox
             key={t.name}

@@ -11,8 +11,13 @@ import {
 } from "mobx";
 import { IPokemon } from "pokeapi-typescript";
 import { listAllPokemon } from "../api/listAllPokemon";
-import { Query, PokemonType } from "../types";
-import { searchParamsToQuery, parseUniqueTypes, parseTypes } from "../utils";
+import { Query, PokemonType, PokemonSpecies } from "../types";
+import {
+  searchParamsToQuery,
+  parseUniqueTypes,
+  parseUniqueSpecies,
+  parseTypes,
+} from "../utils";
 
 enum AppStoreState {
   INITIAL,
@@ -25,9 +30,12 @@ export class AppStore {
   public state: AppStoreState = AppStoreState.INITIAL;
   public pokemon: IPokemon[] = [];
   public pokemonTypes: PokemonType[] = [];
+  public pokemonSpecies: PokemonSpecies[] = [];
   public query: Query = { name: "", species: "", types: "", sort: "" };
 
-  constructor(searchParams?: URLSearchParams) {
+  constructor(searchParams: URLSearchParams = new URLSearchParams()) {
+    this.query = searchParamsToQuery(searchParams);
+
     makeObservable(this, {
       state: observable,
       loading: computed,
@@ -42,11 +50,9 @@ export class AppStore {
       query: observable,
       queryResults: computed,
       activeTypes: computed,
+      activeSpecies: computed,
     });
 
-    if (searchParams) {
-      this.query = searchParamsToQuery(searchParams);
-    }
     this.initializePokemon();
     this.keepLocationBarInSyncWithAppState();
   }
@@ -65,6 +71,7 @@ export class AppStore {
         runInAction(() => {
           this.pokemon = cachedPokemon;
           this.pokemonTypes = parseUniqueTypes(cachedPokemon);
+          this.pokemonSpecies = parseUniqueSpecies(cachedPokemon);
           this.state = AppStoreState.FULFILLED;
         });
       } else {
@@ -95,8 +102,10 @@ export class AppStore {
     } finally {
       if (!this.error) {
         runInAction(() => {
-          this.state = AppStoreState.FULFILLED;
+          this.pokemonTypes = parseUniqueTypes(this.pokemon);
+          this.pokemonSpecies = parseUniqueSpecies(this.pokemon);
           setCachedPokemon(toJS(this.pokemon));
+          this.state = AppStoreState.FULFILLED;
         });
       }
     }
@@ -122,7 +131,13 @@ export class AppStore {
     return this.query.types?.split(",") ?? [];
   }
 
+  get activeSpecies() {
+    return this.query.species?.split(",") ?? [];
+  }
+
   public get queryResults(): IPokemon[] {
+    if (this.loading) return [];
+
     let results = this.pokemon;
 
     if (this.query.name) {
@@ -138,6 +153,13 @@ export class AppStore {
       });
     }
 
+    if (this.query.species) {
+      const activeSpecies = this.activeSpecies;
+      results = results.filter((pokemon) => {
+        return activeSpecies.includes(pokemon.species.name);
+      });
+    }
+
     return results;
   }
 
@@ -147,5 +169,9 @@ export class AppStore {
 
   public filterByType(types: string[]) {
     this.query.types = types.toString();
+  }
+
+  public filterBySpecies(species: string[]) {
+    this.query.species = species.toString();
   }
 }

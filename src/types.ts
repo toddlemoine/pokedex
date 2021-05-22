@@ -1,4 +1,4 @@
-import { IType } from "pokeapi-typescript";
+import { IPokemonSpecies, IType } from "pokeapi-typescript";
 
 export interface Query {
   [key: string]: string;
@@ -9,3 +9,4 @@ export interface Query {
 }
 
 export type PokemonType = Pick<IType, "name">;
+export type PokemonSpecies = Pick<IPokemonSpecies, "name">;
