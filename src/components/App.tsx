@@ -68,13 +68,15 @@ const App = observer(() => {
   const summaryText =
     store.queryResults.length === 0
       ? "No Pokemon found"
-      : `${store.queryResults.length} Pokemon found`;
+      : `${store.queryResults.length} of ${store.pokemon.length} Pokemon shown`;
 
   return (
     <>
       <div className={styles.root}>
         <aside className={styles.filterpane}>
-          <Heading size={900}>Pokedex</Heading>
+          <Heading is="h1" size={900} marginBottom={16}>
+            Pokedex
+          </Heading>
           <form
             aria-describedby="Filter the Pokedex by name, type, or species"
             onSubmit={cancelSubmit}
@@ -105,7 +107,7 @@ const App = observer(() => {
           </form>
         </aside>
         <div className={styles.contentpane}>
-          <Pane display="flex" flexDirection="row">
+          <Pane display="flex" flexDirection="row" marginBottom={16}>
             <Pane flex={1}>
               <Heading>{summaryText}</Heading>
               <Paragraph>
@@ -114,7 +116,11 @@ const App = observer(() => {
               </Paragraph>
             </Pane>
             <Pane>
-              <SortMenu onSelect={(field) => store.sortBy(field)} />
+              <SortMenu
+                activeField={store.sortField}
+                activeDirection={store.sortedAscending ? "asc" : "desc"}
+                onSelect={(field) => store.sortBy(field)}
+              />
             </Pane>
           </Pane>
           <PokeGrid

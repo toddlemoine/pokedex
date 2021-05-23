@@ -1,12 +1,32 @@
 import React from "react";
-import { Button, Menu, Popover, SortIcon, Position } from "evergreen-ui";
+import {
+  Strong,
+  Text,
+  Button,
+  Menu,
+  Popover,
+  SortIcon,
+  Position,
+  SortAscIcon,
+  SortDescIcon,
+} from "evergreen-ui";
+import { SortDirection } from "../types";
+import { fieldNames } from "../utils";
 
-export const SortMenu: React.FC<{ onSelect: (field: string) => void }> = ({
-  onSelect,
-}) => {
+export const SortMenu: React.FC<{
+  onSelect: (field: string) => void;
+  activeField: string;
+  activeDirection: SortDirection;
+}> = ({ onSelect, activeField, activeDirection }) => {
   const createHandler = (field: string) => {
     return () => onSelect(field);
   };
+
+  const fields = "order name type species hp exp ability_count height weight".split(
+    " "
+  );
+
+  const ActiveSortIcon = activeDirection === "asc" ? SortAscIcon : SortDescIcon;
 
   return (
     <Popover
@@ -14,18 +34,21 @@ export const SortMenu: React.FC<{ onSelect: (field: string) => void }> = ({
       content={
         <Menu>
           <Menu.Group>
-            <Menu.Item onSelect={createHandler("name")}>Name</Menu.Item>
-            <Menu.Item onSelect={createHandler("type")}>Type</Menu.Item>
-            <Menu.Item onSelect={createHandler("species")}>Species</Menu.Item>
-            <Menu.Item onSelect={createHandler("hp")}>HP</Menu.Item>
-            <Menu.Item onSelect={createHandler("exp")}>
-              Base Experience
-            </Menu.Item>
-            <Menu.Item onSelect={createHandler("ability_count")}>
-              Ability Count
-            </Menu.Item>
-            <Menu.Item onSelect={createHandler("height")}>Height</Menu.Item>
-            <Menu.Item onSelect={createHandler("weight")}>Weight</Menu.Item>
+            {fields.map((field) => (
+              <Menu.Item
+                key={field}
+                secondaryText={
+                  activeField === field ? <ActiveSortIcon /> : undefined
+                }
+                onSelect={createHandler(field)}
+              >
+                {activeField === field ? (
+                  <Strong>{fieldNames(field)}</Strong>
+                ) : (
+                  <Text>{fieldNames(field)}</Text>
+                )}
+              </Menu.Item>
+            ))}
           </Menu.Group>
         </Menu>
       }

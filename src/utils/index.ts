@@ -54,12 +54,15 @@ export const parseTypes = (pokemon: IPokemon): string[] => {
 
 export const searchParamsToQuery = (params: URLSearchParams): Query => {
   const validKeys = ["name", "sort", "types", "species"];
-  return Array.from(params.entries()).reduce((query, [key, val]) => {
-    if (validKeys.includes(key)) {
-      query[key] = val;
-    }
-    return query;
-  }, {} as Query);
+  return Array.from(params.entries()).reduce(
+    (query, [key, val]) => {
+      if (validKeys.includes(key)) {
+        query[key] = val;
+      }
+      return query;
+    },
+    { name: "", types: "", species: "", sort: "" } as Query
+  );
 };
 
 export const statsToMap = (pokemon: IPokemon): PokemonStatsMap => {
@@ -80,6 +83,7 @@ export const fieldAccessors: FieldAccessors = {
   height: (p: IPokemon): number => p.height,
   weight: (p: IPokemon): number => p.weight,
   ability_count: (p: IPokemon): number => p.abilities.length,
+  order: (p: IPokemon): number => p.order,
 };
 
 export const flipDirection = (direction: SortDirection): SortDirection => {
@@ -96,6 +100,7 @@ export const fieldNames = (key: string): string => {
     height: "Height",
     weight: "Weight",
     ability_count: "Ability Count",
+    order: "Order",
   };
 
   return fields[key] ?? "Unknown";

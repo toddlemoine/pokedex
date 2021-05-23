@@ -36,8 +36,10 @@ export class AppStore {
   public query: Query = { name: "", species: "", types: "", sort: "" };
   public activePokemon: IPokemon | null = null;
 
-  constructor(searchParams: URLSearchParams = new URLSearchParams()) {
-    this.query = searchParamsToQuery(searchParams);
+  constructor(searchParams?: URLSearchParams) {
+    if (searchParams) {
+      this.query = searchParamsToQuery(searchParams);
+    }
 
     makeObservable(this, {
       state: observable,
@@ -56,6 +58,7 @@ export class AppStore {
       activeSpecies: computed,
       activePokemon: observable,
       selectPokemon: action,
+      sortBy: action,
       sortField: computed,
       sortedAscending: computed,
     });
@@ -94,12 +97,29 @@ export class AppStore {
 
     try {
       const { results } = await listAllPokemon();
-      let counter = results.length;
+
+      const chunks = [];
+      while (results.length) {
+        chunks.push(results.splice(0, 5));
+      }
+
+      let counter = chunks.length;
+
       while (counter--) {
-        const resource = results[counter];
-        const pokemon = await getPokemon(resource);
+        const resources = chunks[counter];
+        const pokemon = await Promise.allSettled(
+          resources.map((res) => getPokemon(res))
+        );
+
         runInAction(() => {
-          this.pokemon = this.pokemon.concat(pokemon);
+          const fulfilled = pokemon.reduce((acc, result) => {
+            if (result.status === "fulfilled") {
+              acc.push(result.value);
+            }
+            return acc;
+          }, [] as IPokemon[]);
+
+          this.pokemon = this.pokemon.concat(fulfilled);
         });
       }
     } catch (err) {
@@ -151,7 +171,8 @@ export class AppStore {
 
     if (this.query.name) {
       const { name } = this.query;
-      results = results.filter((p) => p.name.includes(name));
+      const re = new RegExp(name, "gi");
+      results = results.filter((p) => p.name.match(re));
     }
 
     if (this.query.types) {
@@ -173,7 +194,7 @@ export class AppStore {
   }
 
   public get sortField(): string {
-    const [field = "name", _dir] = this.query.sort.split(".");
+    const [field = "order", _dir] = this.query.sort.split(".");
     return field;
   }
 
@@ -207,7 +228,7 @@ export class AppStore {
   }
 
   private sortResults(results: IPokemon[]): IPokemon[] {
-    const sortParams = this.query.sort ?? "name.asc";
+    const sortParams = this.query.sort ?? "order.asc";
     const [field, direction] = sortParams.split(".");
     const fieldAccessor = fieldAccessors[field] ?? fieldAccessors.name;
     const sorted = results.slice().sort((a: IPokemon, b: IPokemon) => {
