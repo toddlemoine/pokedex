@@ -1,4 +1,8 @@
-import { getCachedPokemon, setCachedPokemon } from "../storage";
+import {
+  initializeStorage,
+  getCachedPokemon,
+  setCachedPokemon,
+} from "../storage";
 import { getPokemon } from "../api";
 import {
   toJS,
@@ -11,8 +15,15 @@ import {
 } from "mobx";
 import { IPokemon } from "pokeapi-typescript";
 import { listAllPokemon } from "../api/listAllPokemon";
-import { SortDirection, Query, PokemonType, PokemonSpecies } from "../types";
 import {
+  SortDirection,
+  Query,
+  PokemonType,
+  PokemonSpecies,
+  AppStorage,
+} from "../types";
+import {
+  last,
   searchParamsToQuery,
   parseUniqueTypes,
   parseUniqueSpecies,
@@ -29,14 +40,22 @@ enum AppStoreState {
 }
 
 export class AppStore {
+  private storage: AppStorage;
   public state: AppStoreState = AppStoreState.INITIAL;
   public pokemon: IPokemon[] = [];
   public pokemonTypes: PokemonType[] = [];
   public pokemonSpecies: PokemonSpecies[] = [];
-  public query: Query = { name: "", species: "", types: "", sort: "" };
+  public query: Query = { name: "", species: "", types: "", sort: "order.asc" };
   public activePokemon: IPokemon | null = null;
 
-  constructor(searchParams?: URLSearchParams) {
+  constructor(searchParams?: URLSearchParams, storageAdapter?: AppStorage) {
+    if (storageAdapter) {
+      this.storage = storageAdapter;
+    } else {
+      initializeStorage();
+      this.storage = { getCachedPokemon, setCachedPokemon };
+    }
+
     if (searchParams) {
       this.query = searchParamsToQuery(searchParams);
     }
@@ -52,6 +71,7 @@ export class AppStore {
       total: computed,
       filterByName: action,
       filterByType: action,
+      filterBySpecies: action,
       query: observable,
       queryResults: computed,
       activeTypes: computed,
@@ -76,7 +96,7 @@ export class AppStore {
 
   public async initializePokemon() {
     try {
-      const cachedPokemon = await getCachedPokemon();
+      const cachedPokemon = await this.storage.getCachedPokemon();
       if (cachedPokemon !== null) {
         runInAction(() => {
           this.pokemon = cachedPokemon;
@@ -131,7 +151,7 @@ export class AppStore {
         runInAction(() => {
           this.pokemonTypes = parseUniqueTypes(this.pokemon);
           this.pokemonSpecies = parseUniqueSpecies(this.pokemon);
-          setCachedPokemon(toJS(this.pokemon));
+          this.storage.setCachedPokemon(toJS(this.pokemon));
           this.state = AppStoreState.FULFILLED;
         });
       }
@@ -194,12 +214,12 @@ export class AppStore {
   }
 
   public get sortField(): string {
-    const [field = "order", _dir] = this.query.sort.split(".");
+    const [field] = this.query.sort.split(".");
     return field;
   }
 
   public get sortedAscending(): boolean {
-    const [_field, dir] = this.query.sort.split(".");
+    const dir = last(this.query.sort.split("."));
     return dir === "asc";
   }
   public filterByName(name: string) {
@@ -228,7 +248,7 @@ export class AppStore {
   }
 
   private sortResults(results: IPokemon[]): IPokemon[] {
-    const sortParams = this.query.sort ?? "order.asc";
+    const sortParams = this.query.sort || "order.asc";
     const [field, direction] = sortParams.split(".");
     const fieldAccessor = fieldAccessors[field] ?? fieldAccessors.name;
     const sorted = results.slice().sort((a: IPokemon, b: IPokemon) => {

@@ -1,11 +1,11 @@
-import { render } from '@testing-library/react';
+import { render } from "@testing-library/react";
 
 export const renderWithProvider = (Provider, store) => {
-    return component => {
-        const Providers = ({ children }) => {
-            return <Provider value={store}>{children}</Provider>;
-        };
-
-        return render(component, { wrapper: Providers });
+  return (component, perRenderStore?) => {
+    const Providers = ({ children }) => {
+      return <Provider value={perRenderStore ?? store}>{children}</Provider>;
     };
+
+    return render(component, { wrapper: Providers });
+  };
 };

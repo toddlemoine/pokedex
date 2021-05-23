@@ -78,7 +78,8 @@ const App = observer(() => {
             Pokedex
           </Heading>
           <form
-            aria-describedby="Filter the Pokedex by name, type, or species"
+            id="filter-form"
+            aria-label="Filter the Pokedex by name, type, or species"
             onSubmit={cancelSubmit}
           >
             <TextInputField

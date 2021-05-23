@@ -61,7 +61,7 @@ export const searchParamsToQuery = (params: URLSearchParams): Query => {
       }
       return query;
     },
-    { name: "", types: "", species: "", sort: "" } as Query
+    { name: "", types: "", species: "", sort: "order.asc" } as Query
   );
 };
 

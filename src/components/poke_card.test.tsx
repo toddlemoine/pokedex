@@ -1,22 +1,10 @@
 import React from "react";
 import { PokeCard } from "./poke_card";
 import { render, screen } from "@testing-library/react";
+import magbyJson from "../../mocks/pokemon_240_magby.json";
 
 describe("PokeCard", () => {
-  const mockPokemon = {
-    id: 1,
-    name: "Ditto",
-    height: "1m",
-    weight: "300kg",
-    sprites: {
-      other: {
-        "official-artwork": {
-          front_default:
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10.png",
-        },
-      },
-    },
-  };
+  const mockPokemon = magbyJson;
 
   it("is a semantic button", async () => {
     render(<PokeCard pokemon={mockPokemon} />);
@@ -26,7 +14,7 @@ describe("PokeCard", () => {
 
   it("has an image of the pokemon with alt text", () => {
     render(<PokeCard pokemon={mockPokemon} />);
-    const el = screen.getByAltText("Ditto artwork");
+    const el = screen.getByAltText("magby artwork");
     expect(el).toBeInTheDocument();
   });
 });
