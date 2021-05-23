@@ -6,7 +6,6 @@ export const listAllPokemon = async (): Promise<
   INamedApiResourceList<IPokemon>
 > => {
   try {
-    // const resp = await PokeAPI.Pokemon.list(config.pokedexSize);
     const rawResp = await fetch(
       `https://pokeapi.co/api/v2/pokemon?limit=${config.pokedexSize}`
     );

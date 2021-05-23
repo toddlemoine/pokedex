@@ -1,10 +1,6 @@
 import { IPokemon } from "pokeapi-typescript";
 import { SortDirection, Query, PokemonType, PokemonSpecies } from "../types";
 
-export const last = <T>(coll: T[]): T | null => {
-  return coll[coll.length - 1];
-};
-
 interface PokemonOtherSprites {
   sprites: {
     other?: {
@@ -26,6 +22,10 @@ interface FieldAccessors {
   [key: string]: (p: IPokemon) => string | number;
 }
 
+export const last = <T>(coll: T[]): T | null => {
+  return coll[coll.length - 1];
+};
+
 export const getBestArtworkUrl = (
   pokemon: IPokemon & PokemonOtherSprites
 ): string => {
@@ -39,13 +39,17 @@ export const parseUniqueTypes = (pokemon: IPokemon[]): PokemonType[] => {
     curr.types?.forEach((t) => acc.add(t.type.name));
     return acc;
   }, new Set<string>());
-  return Array.from(nameSet).map((name) => ({ name }));
+  return Array.from(nameSet)
+    .sort()
+    .map((name) => ({ name }));
 };
 
 export const parseUniqueSpecies = (pokemon: IPokemon[]): PokemonSpecies[] => {
   const names = pokemon.map((p) => p.species?.name).filter(Boolean);
   const nameSet = new Set(names);
-  return Array.from(nameSet).map((name) => ({ name }));
+  return Array.from(nameSet)
+    .sort()
+    .map((name) => ({ name }));
 };
 
 export const parseTypes = (pokemon: IPokemon): string[] => {
@@ -96,7 +100,7 @@ export const fieldNames = (key: string): string => {
     type: "Type",
     species: "Species",
     hp: "Hit Points",
-    exp: "Base experience",
+    exp: "Base Experience",
     height: "Height",
     weight: "Weight",
     ability_count: "Ability Count",
