@@ -112,7 +112,9 @@ const App = observer(() => {
               <Heading>{summaryText}</Heading>
               <Paragraph>
                 Sorted by {fieldNames(store.sortField)},{" "}
-                {store.sortedAscending ? "Ascending" : "Descending"}
+                {store.sortedAscending
+                  ? "lowest to highest"
+                  : "highest to lowest"}
               </Paragraph>
             </Pane>
             <Pane>

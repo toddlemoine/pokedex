@@ -11,6 +11,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "evergreen-ui": "^6.0.0",
+    "localforage": "^1.9.0",
     "mobx": "^6.3.1",
     "mobx-react": "^7.2.0",
     "pokeapi-typescript": "^2.1.0",

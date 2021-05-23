@@ -1,19 +1,20 @@
 .root {
-    display: grid;
-    grid-template-columns: minmax(275px, 450px) minmax(600px, 1fr);
-    height: 100vh;
+  display: flex;
 }
 
 .filterpane {
-    padding: 3rem;
-    height: 100%;
-    overflow: scroll;
+  padding: 3rem;
+  height: 100%;
+  overflow: auto;
+  top: 0px;
+  position: sticky;
 }
 
 .contentpane {
-    padding: 3rem;
+  flex: 1 auto;
+  padding: 3rem;
 }
 
 .header {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }

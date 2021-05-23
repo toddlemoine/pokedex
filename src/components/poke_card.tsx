@@ -1,9 +1,9 @@
-import { Heading, Paragraph } from "evergreen-ui";
-import { IPokemon } from "pokeapi-typescript";
 import React, { PropsWithChildren } from "react";
-import styles from "./poke_card.module.css";
+import { IPokemon } from "pokeapi-typescript";
+import { Strong, Pane, Badge } from "evergreen-ui";
 import { PokePic } from "./poke_pic";
-import { titleCase } from "../utils";
+import { statsToMap, titleCase } from "../utils";
+import styles from "./poke_card.module.css";
 
 export const PokeCard: React.FC<PropsWithChildren<{
   pokemon: IPokemon;
@@ -11,12 +11,22 @@ export const PokeCard: React.FC<PropsWithChildren<{
 }>> = ({ pokemon, onClick, ...props }) => {
   const handleClick = () => onClick(pokemon);
 
+  const stats = statsToMap(pokemon);
+
   return (
     <button className={styles.root} {...props} onClick={handleClick}>
-      <PokePic pokemon={pokemon} />
-      <Heading>{titleCase(pokemon.name)}</Heading>
-      <Paragraph>Height: {pokemon.height}</Paragraph>
-      <Paragraph>Weight: {pokemon.weight}</Paragraph>
+      <Pane padding={8}>
+        <PokePic pokemon={pokemon} />
+        <Strong>{titleCase(pokemon.name)}</Strong>
+        <Pane display="flex" flexDirection="row" justifyContent="center">
+          <Pane marginRight={8}>
+            <Badge color="purple">EXP</Badge> {pokemon.base_experience}
+          </Pane>
+          <Pane>
+            <Badge color="red">HP</Badge> {stats.hp.base}
+          </Pane>
+        </Pane>
+      </Pane>
     </button>
   );
 };

@@ -1,5 +1,5 @@
-import { setCachedPokemon } from "./../api/cachedPokemon";
-import { getPokemon, getCachedPokemon } from "../api";
+import { getCachedPokemon, setCachedPokemon } from "../storage";
+import { getPokemon } from "../api";
 import {
   toJS,
   action,

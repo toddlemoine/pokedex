@@ -9,6 +9,7 @@ export const PokePic: React.FC<{ pokemon: IPokemon }> = ({ pokemon }) => {
       className={styles.root}
       src={getBestArtworkUrl(pokemon)}
       alt={`${pokemon.name} artwork`}
+      loading="lazy"
     />
   );
 };
