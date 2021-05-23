@@ -16,6 +16,19 @@ yarn && yarn serve
 npm install && npm run serve
 ```
 
+## Using
+
+The first time you launch the app, an initial set of 75 Pokemon are downloaded and cached locally from
+the PokeAPI. That's a one-time operatin and after that, starting or refreshing the app should be much quicker.
+
+Pokemon can be filtered by name, type, and species. They can be sorted by Order, Name, HP, Base experience,
+ability count, height, and weight via a dropdown menu on the right. Sort order is toggled by selecting
+the same sort option again.
+
+View details about a Pokemon by clicking it.
+
+Most, if not all, of the app can be navigated by keyboard.
+
 ## Configuration
 
 Configuration is limited, but what's there is managed through the `.env` file in the root
