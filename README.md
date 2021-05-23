@@ -16,6 +16,9 @@ yarn && yarn serve
 npm install && npm run serve
 ```
 
+
+<img width="512" alt="Screenshot of Pokedex app with filter controls on the left and grid layout of Pokemon on the right." src="https://user-images.githubusercontent.com/394949/119267721-ac9e0580-bba4-11eb-866d-d90dd2924276.png">
+
 ## Using
 
 The first time you launch the app, an initial set of 75 Pokemon are downloaded and cached locally from
