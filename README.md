@@ -19,7 +19,7 @@ npm install && npm run serve
 ## Using
 
 The first time you launch the app, an initial set of 75 Pokemon are downloaded and cached locally from
-the PokeAPI. That's a one-time operatin and after that, starting or refreshing the app should be much quicker.
+the PokeAPI. That's a one-time operation and after that, starting or refreshing the app should be much quicker.
 
 Pokemon can be filtered by name, type, and species. They can be sorted by Order, Name, HP, Base experience,
 ability count, height, and weight via a dropdown menu on the right. Sort order is toggled by selecting
